@@ -8,3 +8,6 @@ $ make flash
 
 to generate .ii files
 $ make preproc
+
+to clean
+$ make clean
