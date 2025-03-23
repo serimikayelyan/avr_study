@@ -42,48 +42,23 @@ int main (void) {
 	timer_init();
 //	USART_init();
 	char a = 0;
-	char c = 'a';
-	char d = 0;
-	DDRB |= (1<<PB5); //Data Direction Register B:
-    	PORTB = 0b00000000 | 1 << 5; //turn on 5th LED bit/pin in PORT B (Pin13 in Arduino)
+
+  	// Set PD0 and PD1 as outputs (pinMode function handles this)
+	DDRD = 1 << PD1; //Data Direction Register D:
+	DDRB = (1<<PB5); //Data Direction Register D:
+	PORTD = 1 << PD1;  // Set PD0 HIGH (turn on LED connected to pin 0)
+	PORTB = (1 << PB5); // Set PD1 LOW (turn off LED connected to pin 1)
 	while (1) {
 		if (TIFR1 & (1 << OCF1A)) {
-			if (a)
-				a = 0;
-			else
-				a = 1;
 			TCNT1 = 0;
-			PORTB = PORTB ^ ((1 << 5));
+			if (a>=2) {
+				PORTD = PORTD ^ (1 << PD1);
+				a = 0;
+			}
+			PORTB = PORTB ^ ((1 << PB5));
 			TIFR1 = TIFR1 & ((1<<OCF1A));
+			a++;
 		}
-		//if (TCNT1 >= 15625) {
-		//	USART_send(c);
-    		//	//PORTB = 0b00100000 | a << 5; //turn on 5th LED bit/pin in PORT B (Pin13 in Arduino)
-		//	a=1;
-		//}
-		//if (TCNT1 < 15625) {
-		//	a = 0;
-		//}
-//		else if (TCNT1 >= 31250 && TCNT1 < 15625) {
-//    			PORTB = 0b00000000; //turn off all bits/pins on PB    
-//			TCNT1 = 0;
-//		}
 	} //end loop
 	return(0); //end program. This never happens.
 }
-
-//#include <avr/io.h>
-//#include <util/delay.h>
-//
-//int main(void) {
-//  DDRB = 0b00000001;
-//
-//  while (1) {
-//    PORTB = 0b00000001;
-//    _delay_ms(1000);
-//    PORTB = 0b00000000;
-//    _delay_ms(1000);
-//  }
-//
-//  return 0;
-//}
