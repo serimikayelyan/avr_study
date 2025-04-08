@@ -30,6 +30,7 @@ LDFLAGS = -mmcu=$(MCU)
 # Files (Projects must define SRC and TARGET)
 OBJ = $(SRC:.c=.o)
 PREPROC = $(SRC:.c=.ii)
+ASM = $(SRC:.c=.s)
 $(info OBJ=$(OBJ))
 ELF = $(TARGET).elf
 HEX = $(TARGET).hex
@@ -46,6 +47,11 @@ preproc: $(PREPROC)
 $(PREPROC): $(SRC)
 	$(CC) $(CFLAGS) -E $< -o $@
 
+asm: $(ASM)
+
+$(ASM): $(SRC)
+	$(CC) $(CFLAGS) -S $< -o $@
+
 # Link Object file to ELF
 $(ELF): $(OBJ)
 	$(CC) $(LDFLAGS) $< -o $@
@@ -55,7 +61,7 @@ $(HEX): $(ELF)
 	$(OBJCOPY) -j .text -j .data -O ihex $< $@
 
 clean:
-	rm $(OBJ) $(ELF) $(HEX) $(PREPROC)
+	rm $(OBJ) $(ELF) $(HEX) $(PREPROC) $(ASM)
 
 flash: $(HEX)
 	avrdude -c $(PROGRAMMER) -p $(MCU) -P $(PORT) -U flash:w:$(HEX)
