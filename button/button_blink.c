@@ -27,13 +27,13 @@ void USART_send(char data)
 //    }
 //}
 
-//void timer_init()
-//{
-//	TCCR1B = (1<<CS10) | (1<<CS12); //set the pre-scalar as 1024
-//	OCR1A = 1562;
-//	TCNT1 = 0;
-//	TIMSK1 |= 1 << OCIE1A;
-//}
+void timer_init()
+{
+	TCCR1B = (1<<CS10) | (1<<CS12); //set the pre-scalar as 1024
+	OCR1A = 1562;
+	TCNT1 = 0;
+	TIMSK1 |= 1 << OCIE1A;
+}
 
 //volatile uint8_t tick1_signal = 0;
 //volatile uint8_t tick2_signal = 0;
@@ -60,7 +60,7 @@ void USART_send(char data)
 //}
 
 int main (void) {
-	//timer_init();
+	timer_init();
 	USART_init();
 	char a = 0;
 	char pressed1 = 0;
@@ -73,24 +73,34 @@ int main (void) {
 	while (1) {
 		if (pressed1 == 0) {
 			if (!(PINB & (1<<PB2))) {
-				pressed1 = 1;
+				_delay_ms(10);
+				if (!(PINB & (1<<PB2)))
+					pressed1 = 1;
 			}
 		}
 		if (pressed1 == 1) {
 			if (PINB & (1<<PB2)) {
-				PORTB ^= (1<<PB3);
-				pressed1 = 0;
+				_delay_ms(10);
+				if (PINB & (1<<PB2)) {
+					PORTB ^= (1<<PB3);
+					pressed1 = 0;
+				}
 			}
 		}
 		if (pressed2 == 0) {
 			if (!(PINB & (1<<PB1))) {
-				pressed2 = 1;
+				_delay_ms(10);
+				if (!(PINB & (1<<PB1)))
+					pressed2 = 1;
 			}
 		}
 		if (pressed2 == 1) {
 			if (PINB & (1<<PB1)) {
-				PORTB ^= (1<<PB5);
-				pressed2 = 0;
+				_delay_ms(10);
+				if (PINB & (1<<PB1)) {
+					PORTB ^= (1<<PB5);
+					pressed2 = 0;
+				}
 			}
 		}
 	} //end loop
