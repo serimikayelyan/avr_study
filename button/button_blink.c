@@ -30,9 +30,9 @@ void USART_send(char data)
 void timer_init()
 {
 	TCCR1B = (1<<CS10) | (1<<CS12); //set the pre-scalar as 1024
-	OCR1A = 1562;
+	OCR1A = 15625;
 	TCNT1 = 0;
-	TIMSK1 |= 1 << OCIE1A;
+//	TIMSK1 |= 1 << OCIE1A;
 }
 
 //volatile uint8_t tick1_signal = 0;
@@ -74,16 +74,43 @@ int main (void) {
 		if (pressed1 == 0) {
 			if (!(PINB & (1<<PB2))) {
 				_delay_ms(10);
-				if (!(PINB & (1<<PB2)))
+				if (!(PINB & (1<<PB2))) {
 					pressed1 = 1;
+					TCNT1 = 0;
+					oldstat = 0;
+				}
 			}
 		}
 		if (pressed1 == 1) {
 			if (PINB & (1<<PB2)) {
 				_delay_ms(10);
 				if (PINB & (1<<PB2)) {
-					PORTB ^= (1<<PB3);
+					if (oldstat == 0) {
+						PORTB ^= (1<<PB3);
+					} else {
+						oldstat = 0;
+					}
 					pressed1 = 0;
+					TCNT1 = 0;
+				}
+			}
+			if (!(PINB & (1<<PB2))) {
+				_delay_ms(10);
+				if (!(PINB & (1<<PB2))) {
+					if (TCNT1 > 31250) {
+						PORTB ^= (1<<PB5);
+						oldstat = 1;
+						TCNT1 = 0;
+					}
+				}
+			}
+		}
+		if (pressed1 == 1 && oldstat == 1) {
+			if (PINB & (1<<PB2)) {
+				_delay_ms(10);
+				if (PINB & (1<<PB2)) {
+					pressed1 = 0;
+					TCNT1 = 0;
 				}
 			}
 		}
