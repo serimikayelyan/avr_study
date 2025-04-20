@@ -61,7 +61,7 @@ $(HEX): $(ELF)
 	$(OBJCOPY) -j .text -j .data -O ihex $< $@
 
 clean:
-	rm $(OBJ) $(ELF) $(HEX) $(PREPROC) $(ASM)
+	rm $(OBJ) $(ELF) $(HEX) $(PREPROC) $(ASM) > /dev/null 2>&1
 
 flash: $(HEX)
 	avrdude -c $(PROGRAMMER) -p $(MCU) -P $(PORT) -U flash:w:$(HEX)
